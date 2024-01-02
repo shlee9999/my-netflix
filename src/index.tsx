@@ -5,6 +5,9 @@ import { ThemeProvider } from 'styled-components';
 import App from './App';
 import { createGlobalStyle } from 'styled-components';
 import { theme } from './theme';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { Tv } from './routes/Tv';
+import { Search } from './routes/Search';
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -70,13 +73,25 @@ a {
   color:inherit;
 }
 `;
-
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <App />,
+    children: [
+      { path: '/tv', element: <Tv /> },
+      {
+        path: '/search',
+        element: <Search />,
+      },
+    ],
+  },
+]);
 ReactDOM.render(
   <React.StrictMode>
     <RecoilRoot>
       <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <App />
+        <RouterProvider router={router} />
       </ThemeProvider>
     </RecoilRoot>
   </React.StrictMode>,
