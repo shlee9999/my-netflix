@@ -8,6 +8,7 @@ import { theme } from './theme';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Tv } from './routes/Tv';
 import { Search } from './routes/Search';
+import { Home } from './routes/Home';
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -78,6 +79,7 @@ const router = createBrowserRouter([
     path: '/',
     element: <App />,
     children: [
+      { path: '/', element: <Home /> },
       { path: '/tv', element: <Tv /> },
       {
         path: '/search',
