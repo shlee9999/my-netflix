@@ -28,7 +28,11 @@ export interface IGetMoviesResult {
   total_results: number;
 }
 export function getMovies() {
-  return fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then(
-    (response) => response.json()
-  );
+  return fetch(`${BASE_PATH}/movie/now_playing?api_key=${API_KEY}`).then((response) => response.json());
+}
+
+export function getSearchResults(keyword: string, page: number) {
+  return fetch(
+    `https://api.themoviedb.org/3/search/movie?query=dune&include_adult=false&language=en-US&page=1&api_key=c7300e6dc631fef9451d69f74f7fc07d`
+  ).then((response) => response.json());
 }
