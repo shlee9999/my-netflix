@@ -149,7 +149,9 @@ function Header() {
             <Link to='/'>Home {homeMatch && <Circle layoutId='circle' />}</Link>
           </Item>
           <Item>
-            <Link to='/tv'>Tv Shows {tvMatch && <Circle layoutId='circle' />}</Link>
+            <Link to='/tv'>
+              Tv Shows {tvMatch && <Circle layoutId='circle' />}
+            </Link>
           </Item>
         </Items>
       </Col>
@@ -160,7 +162,10 @@ function Header() {
             fill='currentColor'
             viewBox='0 0 20 20'
             xmlns='http://www.w3.org/2000/svg'
-            animate={{ x: searchOpen ? -210 : 0, transition: { type: 'linear' } }}
+            animate={{
+              x: searchOpen ? -210 : 0,
+              transition: { type: 'linear' },
+            }}
           >
             <path
               fillRule='evenodd'
