@@ -26,8 +26,7 @@ const Banner = styled.div<BannerProps>`
   flex-direction: column;
   justify-content: center;
   padding: 60px;
-  background-image: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)),
-    url(${(props) => props.$bgPhoto});
+  background-image: linear-gradient(rgba(0, 0, 0, 1), rgba(0, 0, 0, 0)), url(${(props) => props.$bgPhoto});
 `;
 const Title = styled.h2`
   width: 50%;
@@ -52,6 +51,7 @@ const Row = styled(motion.div)`
 `;
 
 const Box = styled(motion.div)`
+  border-radius: 10px;
   cursor: pointer;
   overflow-x: auto;
   /* ㄴ grid 내에서 nowrap으로 인한 가로폭 늘어남 방지 css*/
@@ -91,12 +91,12 @@ const boxVariants: Variants = {
     scale: 1,
   },
   hover: {
-    scale: 1.3,
+    scale: 1.1,
     y: -30,
+    zIndex: 99,
     transition: {
-      delay: 0.2,
       type: 'tween',
-      duration: 0.2,
+      duration: 0.1,
     },
   },
 };
@@ -117,9 +117,8 @@ const infoVariants: Variants = {
   hover: {
     opacity: 1,
     transition: {
-      delay: 0.2,
       type: 'tween',
-      duration: 0.2,
+      duration: 0.1,
     },
   },
 };
@@ -167,10 +166,7 @@ const BigCover = styled.div`
 export const Home = () => {
   const nav = useNavigate();
   const bigMovieMatch = useMatch('movies/:movieId');
-  const { data, isLoading } = useQuery<IGetMoviesResult>(
-    ['movies', 'nowPlaying'],
-    getMovies
-  );
+  const { data, isLoading } = useQuery<IGetMoviesResult>(['movies', 'nowPlaying'], getMovies);
   const [index, setIndex] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const toggleLeaving = () => setLeaving((prev) => !prev);
@@ -187,10 +183,7 @@ export const Home = () => {
     nav(`/movies/${movieId}`);
   };
   const clickedMovie: '' | IMovie | undefined =
-    bigMovieMatch?.params.movieId &&
-    data?.results.find(
-      (movie) => movie.id + '' === bigMovieMatch.params.movieId
-    );
+    bigMovieMatch?.params.movieId && data?.results.find((movie) => movie.id + '' === bigMovieMatch.params.movieId);
   console.log(clickedMovie);
   return (
     <Wrapper>
@@ -198,10 +191,7 @@ export const Home = () => {
         <Loader>Loading....</Loader>
       ) : (
         <>
-          <Banner
-            onClick={increaseIndex}
-            $bgPhoto={makeImagePath(data?.results[0].backdrop_path || '')}
-          >
+          <Banner onClick={increaseIndex} $bgPhoto={makeImagePath(data?.results[0].backdrop_path || '')}>
             <Title>{data?.results[0].title}</Title>
             <Overview>{data?.results[0].overview}</Overview>
           </Banner>
@@ -248,11 +238,7 @@ export const Home = () => {
                   nav('/');
                 }}
               >
-                <BigMovie
-                  onClick={(e) => e.stopPropagation()}
-                  style={{}}
-                  layoutId={bigMovieMatch.params.movieId}
-                >
+                <BigMovie onClick={(e) => e.stopPropagation()} style={{}} layoutId={bigMovieMatch.params.movieId}>
                   {clickedMovie && (
                     <>
                       <BigCover
