@@ -1,9 +1,11 @@
 import { useQuery } from 'react-query';
 import styled from 'styled-components';
-import { IGetMoviesResult, getMovies } from '../api';
+import { IGetMoviesResult, IMovie, getMovies } from '../api';
 import { makeImagePath } from '../utils';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { useMatch } from 'react-router-dom';
 
 const Wrapper = styled.div`
   background: black;
@@ -50,6 +52,7 @@ const Row = styled(motion.div)`
 `;
 
 const Box = styled(motion.div)`
+  cursor: pointer;
   overflow-x: auto;
   /* ㄴ grid 내에서 nowrap으로 인한 가로폭 늘어남 방지 css*/
   height: 300px;
@@ -120,7 +123,50 @@ const infoVariants: Variants = {
     },
   },
 };
+const Overlay = styled(motion.div)`
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0);
+`;
+const BigMovie = styled(motion.div)`
+  position: fixed;
+  width: 40vw;
+  height: 80vh;
+  top: 10vh;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  background-color: ${(props) => props.theme.black.lighter};
+  border-radius: 15px;
+  overflow: hidden;
+`;
+const BigTitle = styled.p`
+  position: relative;
+  top: -34px;
+  color: ${(props) => props.theme.white.lighter};
+  text-align: center;
+  font-size: 24px;
+  font-weight: 500;
+`;
+const BigOverview = styled.p`
+  position: relative;
+  top: -34px;
+  padding: 20px;
+  color: ${(props) => props.theme.white.lighter};
+`;
+const BigCover = styled.div`
+  width: 100%;
+  height: 350px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+`;
 export const Home = () => {
+  const nav = useNavigate();
+  const bigMovieMatch = useMatch('movies/:movieId');
   const { data, isLoading } = useQuery<IGetMoviesResult>(
     ['movies', 'nowPlaying'],
     getMovies
@@ -137,7 +183,15 @@ export const Home = () => {
       setIndex((prev) => (prev === maxIndex ? 0 : prev + 1));
     }
   };
-
+  const onBoxClicked = (movieId: number) => {
+    nav(`/movies/${movieId}`);
+  };
+  const clickedMovie: '' | IMovie | undefined =
+    bigMovieMatch?.params.movieId &&
+    data?.results.find(
+      (movie) => movie.id + '' === bigMovieMatch.params.movieId
+    );
+  console.log(clickedMovie);
   return (
     <Wrapper>
       {isLoading ? (
@@ -169,6 +223,7 @@ export const Home = () => {
                   .slice(offset * index, offset * index + offset)
                   .map((movie) => (
                     <Box
+                      layoutId={movie.id + ''}
                       variants={boxVariants}
                       key={movie.id}
                       initial='normal'
@@ -176,14 +231,45 @@ export const Home = () => {
                       transition={{
                         type: 'tween',
                       }}
+                      onClick={() => onBoxClicked(movie.id)}
                     >
-                      <BoxImg $bgPhoto={makeImagePath(movie.poster_path)} />
+                      <BoxImg $bgPhoto={makeImagePath(movie.backdrop_path)} />
                       <Info variants={infoVariants}>{movie.title}</Info>
                     </Box>
                   ))}
               </Row>
             </AnimatePresence>
           </Slider>
+          <AnimatePresence>
+            {bigMovieMatch && (
+              <Overlay
+                animate={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+                onClick={() => {
+                  nav('/');
+                }}
+              >
+                <BigMovie
+                  onClick={(e) => e.stopPropagation()}
+                  style={{}}
+                  layoutId={bigMovieMatch.params.movieId}
+                >
+                  {clickedMovie && (
+                    <>
+                      <BigCover
+                        style={{
+                          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${makeImagePath(
+                            clickedMovie.backdrop_path + ''
+                          )})`,
+                        }}
+                      />
+                      <BigTitle>{clickedMovie.title}</BigTitle>
+                      <BigOverview>{clickedMovie.overview}</BigOverview>
+                    </>
+                  )}
+                </BigMovie>
+              </Overlay>
+            )}
+          </AnimatePresence>
         </>
       )}
     </Wrapper>
